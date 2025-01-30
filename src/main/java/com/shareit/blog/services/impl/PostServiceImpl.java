@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.shareit.blog.entities.Category;
@@ -76,9 +77,11 @@ public class PostServiceImpl implements PostService{
 	}
 
 	@Override
-	public PostResponse getAllPost(Integer pageNumber, Integer pageSize) {
+	public PostResponse getAllPost(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
 		
-		Pageable p = PageRequest.of(pageNumber, pageSize);
+		Sort sort=sortDir.equalsIgnoreCase("desc")?Sort.by(sortBy).descending():Sort.by(sortBy).ascending();
+		
+		Pageable p = PageRequest.of(pageNumber, pageSize, sort);
 		
 		Page<Post> page= this.postRepo.findAll(p);
 		
@@ -132,8 +135,14 @@ public class PostServiceImpl implements PostService{
 
 	@Override
 	public List<PostDto> searchPosts(String keyword) {
-		// TODO Auto-generated method stub
-		return null;
+		
+//		List<Post> posts = this.postRepo.findByTitleContaining(keyword);
+		
+		List<Post> posts = this.postRepo.searchTitleContaining("%"+keyword+"%");
+		
+		List<PostDto> postDtos = posts.stream().map((post)->this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+		
+		return postDtos;
 	}
 
 }

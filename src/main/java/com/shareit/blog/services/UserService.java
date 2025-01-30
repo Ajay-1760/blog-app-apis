@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.shareit.blog.payloads.UserDto;
 
+import jakarta.validation.Valid;
+
 public interface UserService {
 
 	UserDto CreateUser(UserDto user);
@@ -15,5 +17,7 @@ public interface UserService {
 	List<UserDto> getAllUsers();
 
 	void deleteUser(Integer userId);
+
+	UserDto registerNewUser(@Valid UserDto userDto);
 
 }
